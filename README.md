@@ -41,8 +41,8 @@ public class Account_t extends DomainBuilder {
 		return (Account_t) opp.setParent(Opportunity.AccountId, this);
 	}
 
-	public Account_t add(Contact_t opp) {
-		return (Account_t) opp.setParent(Contact.AccountId, this);
+	public Account_t add(Contact_t con) {
+		return (Account_t) con.setParent(Contact.AccountId, this);
 	}
 }
 ```
