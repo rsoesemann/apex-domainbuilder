@@ -3,7 +3,7 @@ public class Contact_t extends DomainBuilder {
 
 	public Contact_t() {
 		super(Contact.SObjectType);
-
+		
 		last(new Random().string());
 	}
 

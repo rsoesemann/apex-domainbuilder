@@ -2,6 +2,14 @@
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>apex-domainbuilder</fullName>
     <types>
+        <members>Account_t</members>
+        <members>Contact_t</members>
+        <members>DomainBuilder</members>
+        <members>DomainBuilder_Test</members>
+        <members>OpportunityContactRole_t</members>
+        <members>Opportunity_t</members>
+        <members>Random</members>
+        <members>User_t</members>
         <members>fflib_ISObjectUnitOfWork</members>
         <members>fflib_SObjectUnitOfWork</members>
         <members>fflib_SObjectUnitOfWorkTest</members>
