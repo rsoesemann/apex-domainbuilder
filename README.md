@@ -67,3 +67,4 @@ public class Account_t extends DomainBuilder {
         ...
     }
 ```
+4. Using Graph algorithms to autodetect the correct insert order in the Unit Of Work.
