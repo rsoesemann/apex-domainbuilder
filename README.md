@@ -63,8 +63,12 @@ public class Account_t extends DomainBuilder {
                                 .contact(jack))
                 .persist();
         
-        // Verify
+        // Exercise
         ...
+	
+	
+	// Verify
+	...
     }
 ```
 4. Using Graph algorithms to autodetect the correct insert order in the Unit Of Work.
