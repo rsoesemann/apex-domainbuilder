@@ -53,7 +53,7 @@ public class Account_t extends DomainBuilder {
     private static void easyTestDataCreation() {
 
         // Setup
-        Contact_t jack = new Contact_t().first('Ron').last('Harris');
+        Contact_t jack = new Contact_t().first('Jack').last('Harris');
 
         new Account_t()
                 .name('Acme Corp')
