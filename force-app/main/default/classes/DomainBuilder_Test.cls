@@ -104,8 +104,8 @@ public class DomainBuilder_Test {
         Contact_t boss = new Contact_t();
 
         new Contact_t()
-            .reports(boss)
-            .persist();
+                .reports(boss)
+                .persist();
 
         // Verify
         System.assertEquals(2, [SELECT Count() FROM Contact]);
