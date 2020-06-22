@@ -102,7 +102,6 @@ public class DomainBuilder_Test {
 
         // Setup & Exercise
         Contact_t boss = new Contact_t();
-
         new Contact_t()
                 .reports(boss)
                 .persist();
