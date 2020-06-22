@@ -18,7 +18,5 @@ jobs:
           echo ${{ secrets.DEV_HUB_URL }} > devHubURLFile
           sfdx force:auth:sfdxurl:store -d -f devHubURLFile
           rm devHubURLFile
-    - name: trigger build
-      run: |
-        chmod +x ./scripts/createScratchOrg.sh
-        ./scripts/createScratchOrg.sh -p
+          chmod +x ./scripts/createScratchOrg.sh
+          ./scripts/createScratchOrg.sh -p
