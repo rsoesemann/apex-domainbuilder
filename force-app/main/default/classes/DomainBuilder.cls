@@ -6,7 +6,7 @@ public abstract class DomainBuilder {
     private Boolean isSetupObject;
     private Map<SObjectField, DomainBuilder> parentByRelationship = new Map<SObjectField, DomainBuilder>();
     private Map<SObjectField, Map<SObjectField, List<DomainBuilder>>> relationshipsToSync
-                                                    = new Map<SObjectField, Map<SObjectField, List<DomainBuilder>>>();
+                        = new Map<SObjectField, Map<SObjectField, List<DomainBuilder>>>();
     public SObject record;
     public Id id { private set; get {return record.Id;} }
     public SObjectType type;
@@ -32,8 +32,8 @@ public abstract class DomainBuilder {
     // PUBLIC
 
     public SObject persist() {
-	    fflib_SObjectUnitOfWork dataUow = unitOfWork();
-	    fflib_SObjectUnitOfWork setupUow = unitOfWork();
+        fflib_SObjectUnitOfWork dataUow = unitOfWork();
+        fflib_SObjectUnitOfWork setupUow = unitOfWork();
 
         for(DomainBuilder obj: objects) {
             fflib_SObjectUnitOfWork uow = (obj.isSetupObject) ? setupUow : dataUow;
@@ -59,8 +59,8 @@ public abstract class DomainBuilder {
             System.debug(LoggingLevel.ERROR, 'PermissionSetAssignment can not be inserted (Mixed DML)');
         }
 
-	    dataUow = unitOfWork();
-	    setupUow = unitOfWork();
+        dataUow = unitOfWork();
+        setupUow = unitOfWork();
 
         objects.clear();
 
@@ -164,12 +164,12 @@ public abstract class DomainBuilder {
 
 
     private static fflib_SObjectUnitOfWork unitOfWork() {
-	    List<SObjectType> insertOrder = new List<SObjectType>();
-	    List<SObjectType> sorted = graph.sortTopologically();
+        List<SObjectType> insertOrder = new List<SObjectType>();
+        List<SObjectType> sorted = graph.sortTopologically();
 
-	    for(Integer i = sorted.size() - 1; i >= 0; i--){
-		    insertOrder.add(sorted[i]);
-	    }
+        for(Integer i = sorted.size() - 1; i >= 0; i--){
+            insertOrder.add(sorted[i]);
+        }
         return new fflib_SObjectUnitOfWork(insertOrder);
     }
 
@@ -177,7 +177,7 @@ public abstract class DomainBuilder {
     // INNER
 
     // Note: Code adapted from https://codereview.stackexchange.com/questions/177442
-    
+
     @TestVisible
     class DirectedGraph {
 
@@ -208,10 +208,6 @@ public abstract class DomainBuilder {
 
             countDependencies();
 
-            if(pureChilds.isEmpty()) {
-                throw new CyclicGraphException();
-            }
-
             while(!pureChilds.isEmpty()) {
                 SObjectType cur = (SObjectType) pureChilds.iterator().next();
                 pureChilds.remove(cur);
@@ -219,17 +215,22 @@ public abstract class DomainBuilder {
                 result.add(cur);
 
                 for(SObjectType type : parents.get(cur)) {
-                    Integer newCnt = childCount.get(type) - 1;
-                    childCount.put(type, newCnt);
+                    if(childCount.containsKey(type)) {
+                        Integer newCnt = childCount.get(type) - 1;
+                        childCount.put(type, newCnt);
 
-                    if(newCnt == 0) {
-                        pureChilds.add(type);
+                        if(newCnt == 0) {
+                            pureChilds.add(type);
+                        }
                     }
                 }
             }
 
-            if(result.size() != parents.size()) {
-                throw new CyclicGraphException();
+            // Note: Handle cycles
+            if(result.size() < parents.size()) {
+                Set<SObjectType> missing = parents.keySet();
+                missing.removeAll( new Set<SObjectType>(result) );
+                result.addAll(missing);
             }
 
             return result;
@@ -245,7 +246,12 @@ public abstract class DomainBuilder {
                 for(SObjectType parent : parents.get(type)) {
                     pureChilds.remove(parent);
 
-                    if(!childCount.containsKey(parent)) {
+                    // Note: Ignore cycles
+                    if(childCount.containsKey(type)) {
+                        childCount.remove(parent);
+                        pureChilds.remove(type);
+                    }
+                    else if(!childCount.containsKey(parent)) {
                         childCount.put(parent, 1);
                     }
                     else {
@@ -255,7 +261,4 @@ public abstract class DomainBuilder {
             }
         }
     }
-
-
-    public class CyclicGraphException extends Exception {}
 }

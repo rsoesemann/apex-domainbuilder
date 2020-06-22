@@ -1,5 +1,5 @@
 @IsTest
-private class DomainBuilder_Test {
+public class DomainBuilder_Test {
 
     @IsTest
     private static void happyPath() {
@@ -10,9 +10,10 @@ private class DomainBuilder_Test {
                 .name('Acme Corp')
                 .add( new Contact_t() )
                 .add( new Opportunity_t()
-                                .amount(1000)
-                                .closes(2019, 12)
-                                .contact(ron))
+                .amount(1000)
+                .closes(2019, 12)
+                .contact(ron))
+
                 .persist();
 
         System.assertEquals(1, [SELECT Count() FROM Account]);
@@ -28,6 +29,7 @@ private class DomainBuilder_Test {
         new Account_t()
                 .add(new Contact_t())
                 .add(new Opportunity_t())
+
                 .persist();
 
         System.assertNotEquals(null, [SELECT Name FROM Account]);
@@ -41,6 +43,7 @@ private class DomainBuilder_Test {
 
         new Opportunity_t()
                 .amount(1000)
+
                 .persist();
 
         System.assertEquals(1, [SELECT Count() FROM Account]);
@@ -53,8 +56,8 @@ private class DomainBuilder_Test {
     private static void allowNicerFieldSetters() {
 
         new Opportunity_t()
-                    .closes(2019, 7)
-                    .persist();
+                            .closes(2019, 7)
+                            .persist();
 
         System.assertEquals(Date.newInstance(2019, 7, 1), [SELECT CloseDate FROM Opportunity].CloseDate);
     }
@@ -95,6 +98,21 @@ private class DomainBuilder_Test {
 
 
     @IsTest
+    private static void worksWithSelfReferences() {
+
+        // Setup & Exercise
+        Contact_t boss = new Contact_t();
+
+        new Contact_t()
+                .reports(boss)
+                .persist();
+
+        // Verify
+        System.assertEquals(2, [SELECT Count() FROM Contact]);
+    }
+
+
+    @IsTest
     private static void worksWithLinkerObjects() {
 
         Opportunity_t o = new Opportunity_t();
@@ -102,7 +120,7 @@ private class DomainBuilder_Test {
         new OpportunityContactRole_t(o, c).persist();
 
         System.assertEquals(1, [SELECT Count() FROM OpportunityContactRole
-                                WHERE ContactId = :c.Id AND OpportunityId = :o.Id]);
+        WHERE ContactId = :c.Id AND OpportunityId = :o.Id]);
     }
 
 
@@ -114,7 +132,7 @@ private class DomainBuilder_Test {
                 .persist();
 
         System.assertEquals(1, [SELECT Count() FROM OpportunityContactRole
-                                WHERE ContactId != null AND OpportunityId != null]);
+        WHERE ContactId != null AND OpportunityId != null]);
     }
 
 
@@ -155,28 +173,7 @@ private class DomainBuilder_Test {
 
         // Verify
         List<SObjectType> expectedOrder = new List<SObjectType>{
-                OpportunityContactRole.SObjectType, Contact.SObjectType, Opportunity.SObjectType, Account.SObjectType };
+                            OpportunityContactRole.SObjectType, Contact.SObjectType, Opportunity.SObjectType, Account.SObjectType };
         System.assertEquals(expectedOrder, graph.sortTopologically());
-    }
-
-
-    @IsTest
-    private static void insertOrderFailsWhenCycles() {
-
-        try {
-            new DomainBuilder.DirectedGraph()
-                    .node(Contact.SObjectType)
-                    .node(Opportunity.SObjectType)
-
-                    .edge(Contact.SObjectType, Opportunity.SObjectType)
-                    .edge(Opportunity.SObjectType, Contact.SObjectType)
-
-                    .sortTopologically();
-
-            System.assert(false);
-        }
-        catch(Exception ex) {
-            System.assert(true);
-        }
     }
 }

@@ -1,0 +1,32 @@
+image: salesforce/salesforcedx:latest-full
+
+definitions:
+  steps:
+    - step: &deployToScratchOrg
+        name: Deploy To Scratch ORG
+        script:
+            - echo $DEV_HUB_URL > devHubURLFile
+            - sfdx force:auth:sfdxurl:store -d -f devHubURLFile 
+            - rm devHubURLFile
+            - chmod +x ./scripts/createScratchOrg.sh
+            - ./scripts/createScratchOrg.sh
+        after-script:
+            - sfdx force:org:delete -p
+    - step: &createPackage
+        name: Create package version
+        script:
+            - echo $DEV_HUB_URL > devHubURLFile
+            - sfdx force:auth:sfdxurl:store -d -f devHubURLFile 
+            - rm devHubURLFile
+            - chmod +x ./scripts/createPackage.sh
+            - ./scripts/createPackage.sh
+pipelines:
+   pull-requests:
+    feature/*:
+      - step: *deployToScratchOrg
+    bugfix/*:
+      - step: *deployToScratchOrg
+   branches:
+    trunk:
+      - step: *deployToScratchOrg
+      - step: *createPackage
