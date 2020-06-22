@@ -354,12 +354,20 @@ public virtual class fflib_SObjectUnitOfWork
         {
             // notify we're starting the DML operations
             onDMLStarting();
+
             // Insert by type
             for(Schema.SObjectType sObjectType : m_sObjectTypes)
             {
-                m_relationships.get(sObjectType.getDescribe().getName()).resolve();
+                Boolean hasSelfLookup = m_relationships.get(sObjectType.getDescribe().getName()).resolve();
                 m_dml.dmlInsert(m_newListByType.get(sObjectType.getDescribe().getName()));
+                
+                // Note: In case of self lookup run a dirty cycle to populate parent ids
+                if(hasSelfLookup) {
+                    m_relationships.get(sObjectType.getDescribe().getName()).resolve();
+                    m_dml.dmlUpdate(m_newListByType.get(sObjectType.getDescribe().getName()));
+                }
             }
+
             // Update by type
             for(Schema.SObjectType sObjectType : m_sObjectTypes)
                 m_dml.dmlUpdate(m_dirtyMapByType.get(sObjectType.getDescribe().getName()).values());
@@ -406,15 +414,18 @@ public virtual class fflib_SObjectUnitOfWork
     {
         private List<IRelationship> m_relationships = new List<IRelationship>();
 
-        public void resolve()
+        public Boolean resolve()
         {
+            Boolean result = false;
+
             // Resolve relationships
             for(IRelationship relationship : m_relationships)
             {
-                //relationship.Record.put(relationship.RelatedToField, relationship.RelatedTo.Id);
                 relationship.resolve();
+                result = result || relationship.isSelfLookup();
             }
 
+            return result;
         }
 
         public void add(SObject record, Schema.sObjectField relatedToField, SObject relatedTo)
@@ -439,6 +450,7 @@ public virtual class fflib_SObjectUnitOfWork
     private interface IRelationship
     {
         void resolve();
+        Boolean isSelfLookup();
     }
 
     private class Relationship implements IRelationship
@@ -451,6 +463,10 @@ public virtual class fflib_SObjectUnitOfWork
         {
             this.Record.put( this.RelatedToField, this.RelatedTo.Id);
         }
+
+        public Boolean isSelfLookup() {
+            return Record.getSObjectType() == RelatedTo.getSObjectType();
+        }
     }
 
     private class EmailRelationship implements IRelationship
@@ -461,6 +477,11 @@ public virtual class fflib_SObjectUnitOfWork
         public void resolve()
         {
             this.email.setWhatId( this.RelatedTo.Id );
+        }
+
+        public Boolean isSelfLookup() 
+        {
+            return false;
         }
     }
 

@@ -1,0 +1,22 @@
+name: Verify Pull Request
+
+on:
+  pull_request:
+    branches:
+    - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: docker://salesforce/salesforcedx:latest-full
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Authorise Dev Hub
+      run: |
+          echo ${{ secrets.DEV_HUB_URL }} > devHubURLFile
+          sfdx force:auth:sfdxurl:store -d -f devHubURLFile
+          rm devHubURLFile
+          chmod +x ./scripts/createScratchOrg.sh
+          ./scripts/createScratchOrg.sh -p
