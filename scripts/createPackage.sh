@@ -12,10 +12,10 @@ echo "Create new package version"
 PACKAGE_VERSION="$(execute sfdx force:package:version:create -p $PACKAGENAME -v $DEV_HUB_ALIAS -x -w 10 --json | jq '.result.SubscriberPackageVersionId' | tr -d '"')"
 echo $PACKAGE_VERSION
 
-if [ "$QA_URL" ]; then
+if [ ${{ secrets.QA_URL }} ]; then
   echo "Authenticate and install in QA Org"
 
-  echo $QA_URL > qaURLFile
+  echo ${{ secrets.QA_URL }} > qaURLFile
   sfdx force:auth:sfdxurl:store -f qaURLFile -a $QA_ORG_ALIAS
   rm qaURLFile
 

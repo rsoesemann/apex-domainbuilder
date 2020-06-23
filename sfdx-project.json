@@ -12,6 +12,7 @@
     "sfdcLoginUrl": "https://login.salesforce.com",
     "sourceApiVersion": "48.0",
     "packageAliases": {
-        "apex-domainbuilder": "0Ho4A000000fxSpSAI"
+        "apex-domainbuilder": "0Ho4A000000fxSpSAI",
+        "apex-domainbuilder@1.1.0-1": "04t4A000000onRgQAI"
     }
 }

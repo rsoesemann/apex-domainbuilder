@@ -72,3 +72,4 @@ public class Account_t extends DomainBuilder {
     }
 ```
 4. Using Graph algorithms to autodetect the correct insert order in the Unit Of Work.
+5. Is able to handle self-reference fields (e.g. Manager Contact Lookup on Contact) by using a patched fflib Unit of Work.
