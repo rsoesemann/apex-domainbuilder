@@ -6,10 +6,10 @@ execute() {
 }
 
 echo "List existing package versions"
-sfdx force:package:version:list -p apex-domainbuilder -v DevHubPrivate
+sfdx force:package:version:list -p apex-domainbuilder -v $DEV_HUB_ALIAS
 
 echo "Create new package version"
-PACKAGE_VERSION="$(execute sfdx force:package:version:create -p $PACKAGENAME -v DevHubPrivate -x -w 10 --json | jq '.result.SubscriberPackageVersionId' | tr -d '"')"
+PACKAGE_VERSION="$(execute sfdx force:package:version:create -p $PACKAGENAME -v $DEV_HUB_ALIAS -x -w 10 --json | jq '.result.SubscriberPackageVersionId' | tr -d '"')"
 echo $PACKAGE_VERSION
 
 if [ "$QA_URL" ]; then
