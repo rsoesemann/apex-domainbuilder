@@ -3,17 +3,12 @@
         {
             "path": "force-app",
             "default": true,
-            "package": "sfdxproject",
+            "package": "apex-domainbuilder",
             "versionName": "ver 0.1",
             "versionNumber": "0.1.0.NEXT"
         }
     ],
     "namespace": "",
     "sfdcLoginUrl": "https://login.salesforce.com",
-    "sourceApiVersion": "48.0",
-    "packageAliases": {
-        "sfdxproject": "0Ho2o000000GmnJCAS",
-        "sfdxproject@0.1.0-1": "04t2o000001R5pcAAC",
-        "sfdxproject@0.1.0-2": "04t2o000001R5phAAC"
-    }
+    "sourceApiVersion": "48.0"
 }
