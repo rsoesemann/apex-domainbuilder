@@ -1,4 +1,4 @@
-#!/bin/bash
+ #!/bin/bash
 source `dirname $0`/config.sh
 
 execute() {
@@ -12,7 +12,7 @@ echo "Create new package version"
 PACKAGE_VERSION="$(execute sfdx force:package:version:create -p $PACKAGENAME -v $DEV_HUB_ALIAS -x -w 10 --json | jq '.result.SubscriberPackageVersionId' | tr -d '"')"
 echo $PACKAGE_VERSION
 
-if [ ${{ secrets.QA_URL }} ]; then
+if [ "$secrets.QA_URL" ]; then
   echo "Authenticate and install in QA Org"
 
   echo ${{ secrets.QA_URL }} > qaURLFile
