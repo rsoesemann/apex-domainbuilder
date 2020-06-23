@@ -1,4 +1,4 @@
-name: Verify Pull Request
+name: Create Package Version
 
 on:
   push:
