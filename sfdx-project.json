@@ -5,7 +5,7 @@
             "default": true,
             "package": "apex-domainbuilder",
             "versionName": "Summer '20",
-            "versionNumber": "1.1.NEXT.0"
+            "versionNumber": "1.2.0.NEXT"
         }
     ],
     "namespace": "",

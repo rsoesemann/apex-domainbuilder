@@ -17,8 +17,6 @@ echo "Create new package version"
 PACKAGE_VERSION="$(execute sfdx force:package:version:create -p $PACKAGENAME -x -w 10 --json | jq '.result.SubscriberPackageVersionId' | tr -d '"')"
 echo $PACKAGE_VERSION
 
-execute sfdx force:package:version:promote -p $PACKAGE_VERSION -n
-
 if [ $QA_ORG_ALIAS ]; then
   if [ $secrets.QA_URL ]; then
     echo "Authenticate QA Org"
