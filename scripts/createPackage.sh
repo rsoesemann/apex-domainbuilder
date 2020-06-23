@@ -15,7 +15,7 @@ echo $PACKAGE_VERSION
 if [ "$secrets.QA_URL" ]; then
   echo "Authenticate and install in QA Org"
 
-  echo ${{ secrets.QA_URL }} > qaURLFile
+  echo $secrets.QA_URL > qaURLFile
   sfdx force:auth:sfdxurl:store -f qaURLFile -a $QA_ORG_ALIAS
   rm qaURLFile
 
