@@ -5,14 +5,19 @@ execute() {
   $@ || exit
 }
 
+if [ -z "$secrets.DEV_HUB_URL" ]; then
+  echo "set default devhub user"
+  execute sfdx force:config:set defaultdevhubusername=$DEV_HUB_ALIAS
+fi
+
 echo "List existing package versions"
-sfdx force:package:version:list -p apex-domainbuilder -v $DEV_HUB_ALIAS
+sfdx force:package:version:list -p apex-domainbuilder --concise
 
 echo "Create new package version"
-PACKAGE_VERSION="$(execute sfdx force:package:version:create -p $PACKAGENAME -v $DEV_HUB_ALIAS -x -w 10 --json | jq '.result.SubscriberPackageVersionId' | tr -d '"')"
+PACKAGE_VERSION="$(execute sfdx force:package:version:create -p $PACKAGENAME -x -w 10 --json | jq '.result.SubscriberPackageVersionId' | tr -d '"')"
 echo $PACKAGE_VERSION
 
-execute sfdx force:package:version:promote -p $PACKAGE_VERSION -v $DEV_HUB_ALIAS -n
+execute sfdx force:package:version:promote -p $PACKAGE_VERSION -n
 
 if [ $secrets.QA_URL ]; then
   echo "Authenticate QA Org"
