@@ -34,9 +34,3 @@ if [ -f "package.json" ]; then
   execute npm install 
   execute npm run test:unit
 fi
-
-if [ $secrets.DEV_HUB_URL ]; then
-  echo "deleting old scratch org"
-  sfdx force:org:delete -p -u $SCRATCH_ORG_ALIAS
-fi
-
