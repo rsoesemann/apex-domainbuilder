@@ -34,4 +34,9 @@ public class Opportunity_t extends DomainBuilder {
 	public Opportunity_t closes(Integer y, Integer m) {
 		return (Opportunity_t) set(Opportunity.CloseDate, Date.newInstance(y, m, 1));
 	}
+
+	public Opportunity_t add(Contact_t c) {
+		new OpportunityContactRole_t(this, c);
+		return this;
+	}
 }
