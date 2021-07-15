@@ -2,6 +2,16 @@
 public class DomainBuilder_Test {
 
     @IsTest
+    private static void noUnneededDml() {
+
+        new Account_t().persist();
+
+        System.assertEquals(1, [SELECT Count() FROM Account]);
+        System.assertEquals(1, Limits.getDmlRows());
+    }
+
+
+    @IsTest
     private static void happyPath() {
 
         Contact_t ron = new Contact_t().first('Ron').last('Harris');
