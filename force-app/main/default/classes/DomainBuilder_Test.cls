@@ -4,10 +4,23 @@ public class DomainBuilder_Test {
     @IsTest
     private static void noUnneededDml() {
 
-        new Account_t().persist();
+        // Setup & Exercise
+        Contact_t con = new Contact_t();            // 1x insert
+        Opportunity_t opp = new Opportunity_t();    // 1x insert
 
+        new Account_t()                             // 1x insert
+                .add(new Contact_t())               // 1x insert
+                .add(con)                           // 0x insert
+                .add(opp                            // 0x insert
+                     .add(con))                     // 1x insert OpportunityContactRole
+                .persist();                         // 1x setSavepoint
+        
+        // Verify                
+        System.assertEquals(6, Limits.getDmlRows()); 
         System.assertEquals(1, [SELECT Count() FROM Account]);
-        System.assertEquals(1, Limits.getDmlRows());
+        System.assertEquals(2, [SELECT Count() FROM Contact]);
+        System.assertEquals(1, [SELECT Count() FROM Opportunity]);
+        System.assertEquals(1, [SELECT Count() FROM OpportunityContactRole]);
     }
 
 
