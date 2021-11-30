@@ -30,10 +30,56 @@ private with sharing class fflib_SObjectUnitOfWorkTest
     // SObjects (in order of dependency) used by UnitOfWork in tests bellow
     private static List<Schema.SObjectType> MY_SOBJECTS =
         new Schema.SObjectType[] {
+            Account.SObjectType,
             Product2.SObjectType,
             PricebookEntry.SObjectType,
             Opportunity.SObjectType,
             OpportunityLineItem.SObjectType };
+
+    @IsTest
+    private static void twoDmlRowsForSingleRecord() {
+
+        // Setup
+        fflib_SObjectUnitOfWork uow = new fflib_SObjectUnitOfWork(MY_SOBJECTS);
+        
+        Opportunity o = new Opportunity(Name='foo', StageName='Open', CloseDate=System.today());
+        uow.registerNew(o);
+
+
+        // Exercise
+        uow.commitWork();
+
+
+        // Verify
+        System.assertEquals(1, [SELECT Count() FROM Opportunity]);
+        System.assertEquals(1, Limits.getDmlRows());
+    }    
+    
+    
+    @IsTest
+    private static void fourDmlRowsParentChild() {
+
+        // Setup
+        fflib_SObjectUnitOfWork uow = new fflib_SObjectUnitOfWork(MY_SOBJECTS);
+
+        Account a = new Account(Name='foo');
+        uow.registerNew(a);
+
+        Opportunity o = new Opportunity(Name='foo', StageName='Open', CloseDate=System.today());
+        uow.registerNew(o);
+        uow.registerRelationship(o, Opportunity.AccountId, a);
+
+
+        // Exercise
+        uow.commitWork();
+
+
+        // Verify
+        System.assertEquals(1, [SELECT Count() FROM Opportunity]);
+        System.assertEquals(1, [SELECT Count() FROM Account]);
+        System.assertEquals(2, Limits.getDmlRows());
+    }
+
 
     @isTest
     private static void testUnitOfWorkEmail()
