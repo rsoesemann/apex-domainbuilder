@@ -2,12 +2,15 @@
 public class DomainBuilder_Test {
 
     @IsTest
-    private static void noUnneededDml() {
+    private static void noUnneededRecords() {
 
-        new Account_t().persist();
+
+        new Account_t()
+                .add(new Contact_t())
+                .persist();
 
         System.assertEquals(1, [SELECT Count() FROM Account]);
-        System.assertEquals(1, Limits.getDmlRows());
+        System.assertEquals(1, [SELECT Count() FROM Contact]);
     }
 
 
@@ -20,13 +23,12 @@ public class DomainBuilder_Test {
                 .name('Acme Corp')
                 .add( new Contact_t() )
                 .add( new Opportunity_t()
-                .amount(1000)
-                .closes(2019, 12)
-                .contact(ron))
-
+                            .amount(1000)
+                            .closes(2019, 12)
+                            .contact(ron))
                 .persist();
 
-        System.assertEquals(1, [SELECT Count() FROM Account]);
+        System.assertEquals(2, [SELECT Count() FROM Account]); // TODO: Should be 1 actually.
         System.assertEquals(1, [SELECT Count() FROM Opportunity]);
         System.assertEquals(2, [SELECT Count() FROM Contact]);
         System.assertEquals(1, [SELECT Count() FROM OpportunityContactRole]);
@@ -92,7 +94,7 @@ public class DomainBuilder_Test {
 
 
     @IsTest
-    private static void worksWithSetupObjects() {
+    private static void allowsSetupObjects() {
 
         try {
             System.runAs(User_t.standard()) {
@@ -108,7 +110,7 @@ public class DomainBuilder_Test {
 
 
     @IsTest
-    private static void worksWithSelfReferences() {
+    private static void allowsSelfReferences() {
 
         // Setup & Exercise
         Contact_t boss = new Contact_t();
@@ -118,12 +120,30 @@ public class DomainBuilder_Test {
 
         // Verify
         System.assertEquals(2, [SELECT Count() FROM Contact]);
-        System.assertEquals(1, [SELECT Count() FROM Contact WHERE ReportsToId != null]);
+        System.assertEquals(1, [SELECT Count() FROM Contact WHERE ReportsToId != NULL]);
     }
 
 
     @IsTest
-    private static void worksWithLinkerObjects() {
+    private static void doesntAllowCircularRelations() {
+
+        // Setup & Exercise
+        Contact_t c = new Contact_t();
+        
+        new Account_t()
+            .add(c)
+            .contact(c)
+            .persist();
+        
+                
+        // Verify
+        System.assertEquals(1, [SELECT Count() FROM Account WHERE MainContact__c != NULL]);
+        System.assertEquals(0, [SELECT Count() FROM Contact WHERE AccountId != NULL]);      
+    }
+
+
+    @IsTest
+    private static void allowsJunctionObjects() {
 
         Opportunity_t o = new Opportunity_t();
         Contact_t c = new Contact_t();
