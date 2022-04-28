@@ -39,6 +39,3 @@ $RECYCLE.BIN/
 
 # Temporary folder created by scripts
 metadata/
-
-# Default folder
-sfdx-source/main/default/**
