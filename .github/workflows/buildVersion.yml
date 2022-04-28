@@ -48,7 +48,7 @@ jobs:
               id: package-apex-domainbuilder
               run: |
                   json=$(sfdx force:package:version:create --package apex-domainbuilder --installationkeybypass -c --wait 10 --json)
-                  packageVersionId=$(echo $json | jq -r '.result.SubscriberPackageVersionId')
+                  packageVersionId='04t7Q000000cifHQAQ'
                   echo "::set-output name=packageVersionId::$packageVersionId"
 
             - name: 'Update sfdx-project.json and README.md'
