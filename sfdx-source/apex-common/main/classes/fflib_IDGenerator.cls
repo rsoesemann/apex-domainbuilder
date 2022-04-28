@@ -24,6 +24,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 public with sharing class fflib_IDGenerator 
+
 {
 	private static Integer fakeIdCount = 0;
 	private static final String ID_PATTERN = '000000000000';
