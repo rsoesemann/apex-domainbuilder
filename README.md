@@ -2,6 +2,10 @@
 
 Test Data Builder framework to setup test data for complex Apex integration tests in a concise, readable and flexible way.
 
+## Latest package version installation links
+
+-   [apex-domainbuilder](https://login.salesforce.com/packaging/installPackage.apexp?p0=04t4A000000onRgQAI)
+
 <a href="https://githubsfdeploy.herokuapp.com?owner=rsoesemann&repo=apex-domainbuilder">
   <img alt="Deploy to Salesforce"
        src="https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/src/main/webapp/resources/img/deploy.png">

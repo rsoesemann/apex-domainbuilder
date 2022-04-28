@@ -13,7 +13,7 @@ private class DomainBuilder_Test {
 				opp // 0x insert
 					.add(con) // 1x insert OpportunityContactRole
 			)
-			.persist(new DebugDML()); // 1x setSavepoint
+			.persist(); // 1x setSavepoint
 
 		// Verify
 		System.assertEquals(6, Limits.getDmlRows());
