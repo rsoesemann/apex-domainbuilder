@@ -46,7 +46,10 @@ jobs:
 
             - name: 'Create package version - apex-domainbuilder'
               id: package-apex-domainbuilder
-              run: sfdx force:package:version:create --package apex-domainbuilder --installationkeybypass -c --wait 10 --json
+              run: |
+                  json=$(sfdx force:package:version:create --package apex-domainbuilder --installationkeybypass -c --wait 10 --json)
+                  packageVersionId=$(echo $json | jq -r '.result.SubscriberPackageVersionId')
+                  echo "::set-output name=packageVersionId::$packageVersionId"
 
             - name: 'Update sfdx-project.json and README.md'
               uses: trailheadapps/github-action-sfdx-packaging-updater@1.1.0
