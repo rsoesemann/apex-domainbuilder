@@ -4,22 +4,98 @@ on:
     push:
         branches:
             - master
+        paths:
+            - sfdx-source/**
 
 jobs:
     build:
+        name: 'Create unlocked package version'
         runs-on: ubuntu-latest
         container:
+            # Warning: when running in container, git commands will not work since it will not be a repository
             image: docker://salesforce/salesforcedx:latest-full
         steps:
-            - name: Checkout code
+            - uses: actions/checkout@v2
+
+            - name: 'Create Dev Hub auth file'
+              run: echo ${{ secrets.DEVHUB_SFDX_AUTH_URL }} > ./DEVHUB_SFDX_AUTH_URL.txt
+
+            - name: 'Authorize Dev Hub'
+              run: sfdx auth:sfdxurl:store --sfdxurlfile ./DEVHUB_SFDX_AUTH_URL.txt --setalias 'Dev Hub' --setdefaultdevhubusername
+
+            - name: 'Remove Dev Hub auth file'
+              run: rm --force ./DEVHUB_SFDX_AUTH_URL.txt
+
+            - name: 'Create scratch org'
+              run: sfdx force:org:create --definitionfile config/project-scratch-def.json --setdefaultusername --durationdays 1 --setalias scratch-org
+
+            - name: 'Push source to scratch org'
+              run: sfdx force:source:push
+
+            - name 'Run local tests'
+              run: sfdx force:apex:test:run --testlevel RunLocalTests --synchronous --resultformat json --loglevel error --json
+
+    build:
+        name: 'Create unlocked package version'
+        runs-on: ubuntu-latest
+        steps:
+            - name: 'Checkout source branch'
               uses: actions/checkout@v2
+              with:
+                  # Note: env.GITHUB_HEAD_REF can not be used because default environment variables exist only in the runner
+                  ref: ${{ github.event.pull_request.head.ref }}
 
-            - name: Verify and create package version
+            - name: 'Restore node_modules cache'
+              id: cache-npm
+              uses: actions/cache@v2
+              with:
+                  path: node_modules
+                  key: npm-${{ hashFiles('**/package-lock.json') }}
+                  restore-keys: |
+                      npm-${{ env.cache-name }}-
+                      npm-
+
+            - name: 'Install npm dependencies'
+              if: steps.cache-npm.outputs.cache-hit != 'true'
+              run: npm ci
+
+            - name: Install Salesforce CLI
+              run: npm install sfdx-cli --global
+
+            - name: 'Create Dev Hub auth file'
+              run: echo ${{ secrets.DEVHUB_SFDX_AUTH_URL }} > ./DEVHUB_SFDX_AUTH_URL.txt
+
+            - name: 'Authorize Dev Hub'
+              run: sfdx auth:sfdxurl:store --sfdxurlfile ./DEVHUB_SFDX_AUTH_URL.txt --setalias 'Dev Hub' --setdefaultdevhubusername --setdefaultusername
+
+            - name: 'Remove Dev Hub auth file'
+              run: rm --force ./DEVHUB_SFDX_AUTH_URL.txt
+
+            - name: 'Create package version - apex-domainbuilder'
+              id: package-apex-domainbuilder
               run: |
-                  echo ${{ secrets.DEV_HUB_URL }} > devHubURLFile
-                  sfdx force:auth:sfdxurl:store -d -f devHubURLFile
-                  rm devHubURLFile
+                  json=$(sfdx force:package:version:create --package apex-domainbuilder --installationkeybypass -c --wait 10 --json)
+                  packageVersionId=$(echo $json | jq -r '.result.SubscriberPackageVersionId')
+                  echo "::set-output name=packageVersionId::$packageVersionId"
 
+            - name: 'Update sfdx-project.json and README.md'
+              uses: trailheadapps/github-action-sfdx-packaging-updater@1.1.0
 
-                  chmod +x ./scripts/createPackage.sh
-                  ./scripts/createPackage.sh -p
+            - name: 'Persist sfdx-project.json and README.md'
+              run: |
+                  git config --local user.email "action@github.com"
+                  git config --local user.name "GitHub Action Bot"
+                  npx prettier --write sfdx-project.json README.md
+                  git add sfdx-project.json README.md
+                  git commit -m "Updated sfdx-project.json and README.md with new package version"
+                  git push
+
+            - name: 'Wait for package installation links to be ready'
+              uses: maddox/actions/sleep@master
+              with:
+                  args: 120
+
+            - name: 'Install apex-domainbuilder in DevHub'
+              run: |
+                  versionId=$(echo '${{ steps.package-apex-domainbuilder.outputs.packageVersionId }}')
+                  sfdx force:package:install --package $versionId --publishwait 10 --wait 10 --noprompt

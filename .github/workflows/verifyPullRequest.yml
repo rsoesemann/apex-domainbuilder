@@ -4,19 +4,94 @@ on:
     pull_request:
         branches:
             - master
+        paths:
+            - sfdx-source/**
 
 jobs:
-    build:
+    verify-formatting:
+        name: 'Verify formatting'
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+
+            - name: 'Restore node_modules cache'
+              id: cache-npm
+              uses: actions/cache@v2
+              with:
+                  path: node_modules
+                  key: npm-${{ hashFiles('**/package-lock.json') }}
+                  restore-keys: |
+                      npm-${{ env.cache-name }}-
+                      npm-
+
+            - name: 'Install npm dependencies'
+              if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+              run: npm ci
+
+            - name: 'Verify formatting'
+              run: |
+                  git fetch origin $GITHUB_BASE_REF
+                  CHANGED_FILES=$(git diff-tree --diff-filter=AM --no-commit-id --name-only -r origin/$GITHUB_BASE_REF HEAD)
+                  IFS=$'\n'
+                  for FILE in $CHANGED_FILES;
+                  do
+                      npx prettier --list-different "$FILE"
+                  done
+                  unset IFS
+
+    verify-pmd:
+        name: 'Verify PMD'
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+
+            - name: 'Restore node_modules cache'
+              id: cache-npm
+              uses: actions/cache@v2
+              with:
+                  path: node_modules
+                  key: npm-${{ hashFiles('**/package-lock.json') }}
+                  restore-keys: |
+                      npm-${{ env.cache-name }}-
+                      npm-
+
+            - name: 'Install npm dependencies'
+              if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+              run: npm ci
+
+            - name: 'Verify PMD'
+              run: |
+                  git fetch origin $GITHUB_BASE_REF
+                  CHANGED_FILES=$(git diff-tree --diff-filter=AM --no-commit-id --name-only -r origin/$GITHUB_BASE_REF HEAD)
+                  CHANGED_FILES=$(echo $CHANGED_FILES | tr -s '[:blank:]' ',')
+                  npm install sfdx-cli --global
+                  sfdx plugins:install @salesforce/sfdx-scanner
+                  sfdx scanner:run --pmdconfig ruleset.xml --target $CHANGED_FILES,!sfdx-source/frameworks/**/*.cls --engine pmd --severity-threshold 3 --format table
+
+    scratch-org-validations:
+        name: 'Execute scratch org validations'
+        needs: [verify-formatting, verify-pmd]
         runs-on: ubuntu-latest
         container:
+            # Warning: when running in container, git commands will not work since it will not be a repository
             image: docker://salesforce/salesforcedx:latest-full
         steps:
-            - name: Checkout
-              uses: actions/checkout@v2
-            - name: Authorise Dev Hub
-              run: |
-                  echo ${{ secrets.DEV_HUB_URL }} > devHubURLFile
-                  sfdx force:auth:sfdxurl:store -d -f devHubURLFile
-                  rm devHubURLFile
-                  chmod +x ./scripts/createScratchOrg.sh
-                  ./scripts/createScratchOrg.sh -p
+            - uses: actions/checkout@v2
+
+            - name: 'Create Dev Hub auth file'
+              run: echo ${{ secrets.DEVHUB_SFDX_AUTH_URL }} > ./DEVHUB_SFDX_AUTH_URL.txt
+
+            - name: 'Authorize Dev Hub'
+              run: sfdx auth:sfdxurl:store --sfdxurlfile ./DEVHUB_SFDX_AUTH_URL.txt --setalias 'Dev Hub' --setdefaultdevhubusername
+
+            - name: 'Remove Dev Hub auth file'
+              run: rm --force ./DEVHUB_SFDX_AUTH_URL.txt
+
+            - name: 'Create scratch org'
+              run: sfdx force:org:create --definitionfile config/project-scratch-def.json --setdefaultusername --durationdays 1 --setalias scratch-org
+
+            - name: 'Push source to scratch org'
+              run: sfdx force:source:push
+
+            - name 'Run local tests'
+              run: sfdx force:apex:test:run --testlevel RunLocalTests --synchronous --resultformat json --loglevel error --json
