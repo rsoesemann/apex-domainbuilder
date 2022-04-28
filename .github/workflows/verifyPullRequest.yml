@@ -93,5 +93,5 @@ jobs:
             - name: 'Push source to scratch org'
               run: sfdx force:source:push
 
-            - name 'Run local tests'
+            - name: 'Run local tests'
               run: sfdx force:apex:test:run --testlevel RunLocalTests --synchronous --resultformat json --loglevel error --json
