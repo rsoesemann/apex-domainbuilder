@@ -65,7 +65,8 @@ jobs:
                   CHANGED_FILES=$(git diff-tree --diff-filter=AM --no-commit-id --name-only -r origin/$GITHUB_BASE_REF HEAD)
                   CHANGED_FILES=$(echo $CHANGED_FILES | tr -s '[:blank:]' ',')
                   npm install sfdx-cli --global
-                  sfdx plugins:install @salesforce/sfdx-scannersfdx scanner:run --pmdconfig ruleset.xml --target $CHANGED_FILES,!sfdx-source/apex-common/**/*.cls --engine pmd --severity-threshold 3 --format table
+                  sfdx plugins:install @salesforce/sfdx-scanner
+                  sfdx scanner:run --pmdconfig ruleset.xml --target $CHANGED_FILES,!sfdx-source/apex-common/**/*.cls --engine pmd --severity-threshold 3 --format table
 
     scratch-org-validations:
         name: 'Execute scratch org validations'
