@@ -35,6 +35,9 @@ Thumbs.db
 ehthumbs.db
 [Dd]esktop.ini
 $RECYCLE.BIN/
+.prettierignore
+.prettierrc
+package-lock.json
 /sfdxproject.iml
 
 # Temporary folder created by scripts

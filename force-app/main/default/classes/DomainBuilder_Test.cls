@@ -3,17 +3,17 @@ private class DomainBuilder_Test {
 	@IsTest
 	private static void noUnneededRecords() {
 		// Setup & Exercise
-		Contact_t con = new Contact_t(); // 1x insert
-		Opportunity_t opp = new Opportunity_t(); // 1x insert
+		Contact_t con = new Contact_t();             // 1x insert
+		Opportunity_t opp = new Opportunity_t();     // 1x insert
 
-		new Account_t() // 1x insert
-			.add(new Contact_t()) // 1x insert
-			.add(con) // 0x insert
+		new Account_t()                              // 1x insert
+			.add(new Contact_t())                    // 1x insert
+			.add(con)                                // 0x insert
 			.add(
-				opp // 0x insert
-					.add(con) // 1x insert OpportunityContactRole
+				opp                                  // 0x insert
+					.add(con)                        // 1x insert OpportunityContactRole
 			)
-			.persist(); // 1x setSavepoint
+			.persist();                              // 1x setSavepoint
 
 		// Verify
 		System.assertEquals(6, Limits.getDmlRows());
