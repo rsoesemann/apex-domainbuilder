@@ -1,5 +1,5 @@
 // Note: ignoring warning wince Profile is a setup object
-@SupressWarning('PMD.ApexSharingViolations')
+@SuppressWarnings('PMD.ApexSharingViolations')
 public virtual class User_t extends DomainBuilder {
 	private static final Id STANDARD_USER = [SELECT Id FROM Profile WHERE Name = 'Standard User'].Id;
 
