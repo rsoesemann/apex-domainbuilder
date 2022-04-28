@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>MainContact__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description
+	>This field exists to show how apex-domainbuilder solves circluar relationships in DomainBuilder_Test class and it is not aimed for production purposes.</description>
+    <externalId>false</externalId>
+    <label>Main Contact</label>
+    <referenceTo>Contact</referenceTo>
+    <relationshipLabel>Accounts</relationshipLabel>
+    <relationshipName>Accounts</relationshipName>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <type>Lookup</type>
+</CustomField>
+<!--put  in a different folder, not in unlocked package, with additonal test, like nebula logger -->

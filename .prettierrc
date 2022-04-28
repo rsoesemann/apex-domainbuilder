@@ -1,0 +1,20 @@
+{
+	"trailingComma": "none",
+	"singleQuote": true,
+	"bracketSameLine": true,
+	"endOfLine": "lf",
+	"printWidth": 120,
+	"tabWidth": 4,
+	"useTabs": true,
+	"apexInsertFinalNewline": true,
+	"overrides": [
+		{
+			"files": "**/lwc/**/*.html",
+			"options": { "parser": "lwc" }
+		},
+		{
+			"files": "*.{cmp,page,component}",
+			"options": { "parser": "html" }
+		}
+	]
+}

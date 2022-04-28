@@ -16,3 +16,9 @@ package.xml
 **/__tests__/**
 
 AppSwitcher.appMenu
+
+# Default folder
+sfdx-source/main/default/**
+
+# DomainBuilder extra-tests, so they are not included in the unlocked package
+sfdx-source/extra-tests/**
