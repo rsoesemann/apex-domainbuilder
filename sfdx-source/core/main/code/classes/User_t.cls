@@ -18,7 +18,7 @@ public virtual class User_t extends DomainBuilder {
 		set(User.isActive, true);
 		set(User.username, name + '@scott.com');
 		set(User.profileId, STANDARD_USER);
-		// Note: using alternative way to improve test coverage
+		// Note: alternative way to improve test coverage
 		set('UserPermissionsSFContentUser', false);
 	}
 
