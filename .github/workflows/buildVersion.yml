@@ -11,33 +11,6 @@ jobs:
     build:
         name: 'Create unlocked package version'
         runs-on: ubuntu-latest
-        container:
-            # Warning: when running in container, git commands will not work since it will not be a repository
-            image: docker://salesforce/salesforcedx:latest-full
-        steps:
-            - uses: actions/checkout@v2
-
-            - name: 'Create Dev Hub auth file'
-              run: echo ${{ secrets.DEVHUB_SFDX_AUTH_URL }} > ./DEVHUB_SFDX_AUTH_URL.txt
-
-            - name: 'Authorize Dev Hub'
-              run: sfdx auth:sfdxurl:store --sfdxurlfile ./DEVHUB_SFDX_AUTH_URL.txt --setalias 'Dev Hub' --setdefaultdevhubusername
-
-            - name: 'Remove Dev Hub auth file'
-              run: rm --force ./DEVHUB_SFDX_AUTH_URL.txt
-
-            - name: 'Create scratch org'
-              run: sfdx force:org:create --definitionfile config/project-scratch-def.json --setdefaultusername --durationdays 1 --setalias scratch-org
-
-            - name: 'Push source to scratch org'
-              run: sfdx force:source:push
-
-            - name 'Run local tests'
-              run: sfdx force:apex:test:run --testlevel RunLocalTests --synchronous --resultformat json --loglevel error --json
-
-    build:
-        name: 'Create unlocked package version'
-        runs-on: ubuntu-latest
         steps:
             - name: 'Checkout source branch'
               uses: actions/checkout@v2
