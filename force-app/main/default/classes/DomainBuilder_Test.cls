@@ -135,24 +135,6 @@ public class DomainBuilder_Test {
 
 
     @IsTest
-    private static void doesntAllowCircularRelations() {
-
-        // Setup & Exercise
-        Contact_t c = new Contact_t();
-        
-        new Account_t()
-            .add(c)
-            .contact(c)
-            .persist();
-        
-                
-        // Verify
-        System.assertEquals(1, [SELECT Count() FROM Account WHERE MainContact__c != NULL]);
-        System.assertEquals(0, [SELECT Count() FROM Contact WHERE AccountId != NULL]);      
-    }
-
-
-    @IsTest
     private static void allowsJunctionObjects() {
 
         Opportunity_t o = new Opportunity_t();

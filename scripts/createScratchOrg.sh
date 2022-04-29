@@ -26,11 +26,8 @@ echo "Assigning permission"
 echo "Make sure Org user is english"
 sfdx force:data:record:update -s User -w "Name='User User'" -v "Languagelocalekey=en_US"
 
-echo "Running apex tests"
-execute sfdx force:apex:test:run -l RunLocalTests --synchronous
+echo "Running Apex Tests"
+execute sfdx force:apex:test:run -l RunLocalTests -w 30 -c -r human
 
-if [ -f "package.json" ]; then
-  echo "Running jest tests"
-  execute npm install 
-  execute npm run test:unit
-fi
+echo "Running CLI Scanner"
+execute sfdx scanner:run --target "force-app" --pmdconfig "ruleset.xml"

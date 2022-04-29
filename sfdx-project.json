@@ -1,18 +1,11 @@
 {
     "packageDirectories": [
-        {
-            "path": "force-app",
-            "default": true,
-            "package": "apex-domainbuilder",
-            "versionName": "Summer '20",
-            "versionNumber": "1.2.0.NEXT"
-        }
+      {
+        "path": "force-app",
+        "default": true
+      }
     ],
     "namespace": "",
     "sfdcLoginUrl": "https://login.salesforce.com",
-    "sourceApiVersion": "48.0",
-    "packageAliases": {
-        "apex-domainbuilder": "0Ho4A000000fxSpSAI",
-        "apex-domainbuilder@1.1.0-1": "04t4A000000onRgQAI"
-    }
+    "sourceApiVersion": "54.0"
 }
