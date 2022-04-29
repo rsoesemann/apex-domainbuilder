@@ -500,8 +500,8 @@ private with sharing class fflib_SObjectUnitOfWorkTest
 
         // THEN the records should be registered with both changed values for Amount and StageName
 
-		// Commented out to remove dependancy on fflib_MatcherDefinitions
-		// System.assert(
+        // Commented out to remove dependancy on fflib_MatcherDefinitions
+        // System.assert(
         //         new fflib_MatcherDefinitions.SObjectsWith(
         //                 new List<Map<SObjectField, Object>>{
         //                         new Map<SObjectField, Object>
@@ -570,8 +570,8 @@ private with sharing class fflib_SObjectUnitOfWorkTest
 
         // THEN only the first record should be registered with both changed values for Amount and StageName and the second should be the original
 
-		// Commented out to remove dependancy on fflib_MatcherDefinitions
-		// System.assert(
+        // Commented out to remove dependancy on fflib_MatcherDefinitions
+        // System.assert(
         //         !new fflib_MatcherDefinitions.SObjectsWith(
         //                 new List<Map<SObjectField, Object>>{
         //                         new Map<SObjectField, Object>
