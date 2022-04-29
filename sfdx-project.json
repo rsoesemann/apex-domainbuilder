@@ -5,6 +5,7 @@
 			"default": true,
 			"package": "apex-domainbuilder",
 			"versionName": "Summer '22",
+			"definitionFile": "config/project-scratch-def.json",
 			"versionNumber": "1.0.0.NEXT"
 		}
 	],

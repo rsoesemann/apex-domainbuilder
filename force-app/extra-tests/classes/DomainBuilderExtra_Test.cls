@@ -19,22 +19,6 @@ private class DomainBuilderExtra_Test {
 		System.assertEquals(1, [SELECT COUNT() FROM OpportunityContactRole]);
 	}
 
-	// Note: the below test method would fail in unlocked package creation due to dependancy on Standard User existing profile
-	@IsTest
-	private static void allowsSetupObjects() {
-		// Setup & Exercise
-		try {
-			System.runAs(User_t.standard()) {
-				new Account_t().persist();
-			}
-		} catch (Exception ex) {
-			System.assert(false);
-		}
-
-		// Verify
-		System.assertEquals(1, [SELECT COUNT() FROM Account]);
-	}
-
 	// Note: the below test method would introduce dependancy on dummy custom field MainContact__c
 	@IsTest
 	private static void doesntAllowCircularRelations() {

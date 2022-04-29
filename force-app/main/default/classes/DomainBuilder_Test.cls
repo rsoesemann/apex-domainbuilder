@@ -94,6 +94,21 @@ private class DomainBuilder_Test {
 	}
 
 	@IsTest
+	private static void allowsSetupObjects() {
+		// Setup & Exercise
+		try {
+			System.runAs(User_t.standard()) {
+				new Account_t().persist();
+			}
+		} catch (Exception ex) {
+			System.assert(false);
+		}
+
+		// Verify
+		System.assertEquals(1, [SELECT COUNT() FROM Account]);
+	}
+
+	@IsTest
 	private static void allowsSelfReferences() {
 		// Setup & Exercise
 		Contact_t boss = new Contact_t();
