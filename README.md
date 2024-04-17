@@ -18,7 +18,7 @@ Setting up test data for complex Apex integration tests is not easy, because you
  
 TestFactories as used by many developers and recommended by Salesforce.com can help to minimize ugly setup code by moving it to seperate classes. But over the time those classes tend to accumulate complexity and redundant spaghetti code.
 
-In the world of Enterprise software outside of Salesforce.com there are experts that have created patterns for flexible and readable (fluent, concise) test data generation. Among them the most notable is Nat Pryce who wrote a great book about testing and somewhat invented the [Test Data Builder](http://www.natpryce.com/articles/000714.html) pattern.
+In the world of Enterprise software outside of Salesforce.com there are experts that have created patterns for flexible and readable (fluent, concise) test data generation. Among them the most notable is Nat Pryce who wrote a great book about testing and somewhat invented the [Test Data Builder](http://www.natpryce.com/articles/000714.html) pattern. It's based on the more general [Builder Pattern](https://refactoring.guru/design-patterns/builder) which simplifies the construction of objects by moving variations from complex constructors to separate objects that only construct parts of the whole.
 
 **apex-domainbuilder** brings those ideas to Apex testing:
 1. By incorporating a simple small Builder class for each test-relevant Domain SObject we centralize all the creation knowledge and eliminating redundancy.
@@ -47,7 +47,7 @@ public class Account_t extends DomainBuilder {
 }
 ```
 2. By internally leveraging the [`fflib_SObjectUnitOfWork`](https://github.com/financialforcedev/fflib-apex-common/blob/master/fflib/src/classes/fflib_SObjectUnitOfWork.cls) for the DML all test run dramatically faster.
-3. The [Fluent Interface](https://en.wikipedia.org/wiki/Fluent_interface) style of the Builder pattern combined with having all the database wiring encapsulated in the Unit of work made each test much more understandable.
+3. The [Fluent Interface](https://martinfowler.com/bliki/FluentInterface.html) style of the Builder pattern combined with having all the database wiring encapsulated in the Unit of work made each test much more understandable.
 ```java
     @IsTest
     private static void easyTestDataCreation() {

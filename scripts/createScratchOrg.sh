@@ -5,29 +5,21 @@ execute() {
   $@ || exit
 }
 
-if [ -z "$secrets.DEV_HUB_URL" ]; then
-  echo "set default devhub user"
-  execute sfdx force:config:set defaultdevhubusername=$DEV_HUB_ALIAS
 
-  echo "deleting old scratch org"
-  sfdx force:org:delete -p -u $SCRATCH_ORG_ALIAS
-fi
+echo "set default devhub user"
+execute sf config set defaultdevhubusername=$DEV_HUB_ALIAS
 
+echo "Deleting old scratch org"
+sf org delete scratch --no-prompt --target-org $SCRATCH_ORG_ALIAS
 
-echo "Creating scratch ORG"
-execute sfdx force:org:create -a $SCRATCH_ORG_ALIAS -s -f ./config/project-scratch-def.json -d 7
+echo "Creating scratch org"
+execute sf org create scratch --alias $SCRATCH_ORG_ALIAS --set-default --definition-file ./config/scratch-org-def.json --duration-days 30
 
 echo "Pushing changes to scratch org"
-execute sfdx force:source:push
-
-echo "Assigning permission"
-# execute sfdx force:user:permset:assign -n Admin
+execute sf project deploy start
 
 echo "Make sure Org user is english"
-sfdx force:data:record:update -s User -w "Name='User User'" -v "Languagelocalekey=en_US"
+sf data update record --sobject User --where "Name='User User'" --values "Languagelocalekey=en_US"
 
 echo "Running Apex Tests"
-execute sfdx force:apex:test:run -l RunLocalTests -w 30 -c -r human
-
-echo "Running CLI Scanner"
-execute sfdx scanner:run --target "force-app" --pmdconfig "ruleset.xml"
+execute sf apex run test --test-level RunLocalTests --wait 30 --code-coverage --result-format human

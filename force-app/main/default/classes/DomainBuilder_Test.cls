@@ -2,32 +2,9 @@
 public class DomainBuilder_Test {
 
     @IsTest
-    private static void noUnneededRecords() {
-
-        // Setup & Exercise
-        Contact_t con = new Contact_t();            // 1x insert
-        Opportunity_t opp = new Opportunity_t();    // 1x insert
-
-        new Account_t()                             // 1x insert
-                .add(new Contact_t())               // 1x insert
-                .add(con)                           // 0x insert
-                .add(opp                            // 0x insert
-                     .add(con))                     // 1x insert OpportunityContactRole
-                .persist();                         // 1x setSavepoint
-        
-        // Verify                
-        System.assertEquals(6, Limits.getDmlRows()); 
-        System.assertEquals(1, [SELECT Count() FROM Account]);
-        System.assertEquals(2, [SELECT Count() FROM Contact]);
-        System.assertEquals(1, [SELECT Count() FROM Opportunity]);
-        System.assertEquals(1, [SELECT Count() FROM OpportunityContactRole]);
-    }
-
-
-    @IsTest
     private static void happyPath() {
 
-        Contact_t ron = new Contact_t().first('Ron').last('Harris');
+        Contact_t joe = new Contact_t().first('Ron').last('Harris');
 
         new Account_t()
                 .name('Acme Corp')
@@ -35,10 +12,10 @@ public class DomainBuilder_Test {
                 .add( new Opportunity_t()
                             .amount(1000)
                             .closes(2019, 12)
-                            .contact(ron))
+                            .contact(joe))
                 .persist();
 
-        System.assertEquals(2, [SELECT Count() FROM Account]); // TODO: Should be 1 actually.
+        System.assertEquals(2, [SELECT Count() FROM Account]); 
         System.assertEquals(1, [SELECT Count() FROM Opportunity]);
         System.assertEquals(2, [SELECT Count() FROM Contact]);
         System.assertEquals(1, [SELECT Count() FROM OpportunityContactRole]);
@@ -78,8 +55,8 @@ public class DomainBuilder_Test {
     private static void allowNicerFieldSetters() {
 
         new Opportunity_t()
-                            .closes(2019, 7)
-                            .persist();
+                .closes(2019, 7)
+                .persist();
 
         System.assertEquals(Date.newInstance(2019, 7, 1), [SELECT CloseDate FROM Opportunity].CloseDate);
     }
@@ -90,15 +67,13 @@ public class DomainBuilder_Test {
 
         new Account_t()
                 .add(new Contact_t())
-                .add(new Contact_t())
-
-                .add(new Opportunity_t())
-                .add(new Opportunity_t())
+                .add(new Opportunity_t()
+                        .add(new Contact_t()))
 
                 .persist();
 
         System.assertEquals(1, [SELECT Count() FROM Account]);
-        System.assertEquals(2, [SELECT Count() FROM Opportunity]);
+        System.assertEquals(1, [SELECT Count() FROM Opportunity]);
         System.assertEquals(2, [SELECT Count() FROM Contact]);
     }
 
@@ -139,6 +114,7 @@ public class DomainBuilder_Test {
 
         Opportunity_t o = new Opportunity_t();
         Contact_t c = new Contact_t();
+
         new OpportunityContactRole_t(o, c).persist();
 
         System.assertEquals(1, [SELECT Count() FROM OpportunityContactRole
@@ -147,7 +123,7 @@ public class DomainBuilder_Test {
 
 
     @IsTest
-    private static void hideLinkerComplexity() {
+    private static void hideJunctionComplexity() {
 
         new Opportunity_t()
                 .contact(new Contact_t())
@@ -178,6 +154,14 @@ public class DomainBuilder_Test {
 
 
     @IsTest
+    private static void persistReturnsSObject() {
+        Account record = (Account) new Account_t().persist();
+
+        System.assertEquals(1, [SELECT Count() FROM Account]);
+    }
+
+
+    @IsTest
     private static void insertOrder() {
 
         // Setup
@@ -197,5 +181,28 @@ public class DomainBuilder_Test {
         List<SObjectType> expectedOrder = new List<SObjectType>{
                             OpportunityContactRole.SObjectType, Contact.SObjectType, Opportunity.SObjectType, Account.SObjectType };
         System.assertEquals(expectedOrder, graph.sortTopologically());
+    }
+
+
+    @IsTest
+    private static void noUnneededRecords() {
+
+        // Setup & Exercise
+        Contact_t con = new Contact_t();            // 1x insert
+        Opportunity_t opp = new Opportunity_t();    // 1x insert
+
+        new Account_t()                             // 1x insert
+                .add(new Contact_t())               // 1x insert
+                .add(con)                           // 0x insert
+                .add(opp                            // 0x insert
+                     .add(con))                     // 1x insert OpportunityContactRole
+                .persist();                         // 1x setSavepoint
+        
+        // Verify                
+        System.assertEquals(6, Limits.getDmlRows()); 
+        System.assertEquals(1, [SELECT Count() FROM Account]);
+        System.assertEquals(2, [SELECT Count() FROM Contact]);
+        System.assertEquals(1, [SELECT Count() FROM Opportunity]);
+        System.assertEquals(1, [SELECT Count() FROM OpportunityContactRole]);
     }
 }

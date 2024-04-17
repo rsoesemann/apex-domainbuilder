@@ -4,11 +4,16 @@
 
 # Salesforce cache
 .sfdx/
+.sf/
 .localdevserver/
+
+#Snyk cache
+.dccache
 
 # IDEs
 .idea/
 .vscode/
+.vim-force.com/
 IlluminatedCloud/
 projectFilesBackup/
 # LWC VSCode autocomplete
@@ -38,7 +43,8 @@ $RECYCLE.BIN/
 .prettierignore
 .prettierrc
 package-lock.json
-/sfdxproject.iml
+*.iml
 
-# Temporary folder created by scripts
-metadata/
+mdapi/
+/.idea/
+.pmdCache
