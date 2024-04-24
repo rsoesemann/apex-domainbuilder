@@ -2,6 +2,10 @@
 
 Test Data Builder framework to setup test data for complex Apex integration tests in a concise, readable and flexible way.
 
+**TL;DR; Watch my a Youtube Code Live with Salesforce about the apex-domainbuilder**
+
+[![](http://img.youtube.com/vi/e03lvRfOHNs/hqdefault.jpg)](https://youtu.be/e03lvRfOHNs "")
+
 <a href="https://githubsfdeploy.herokuapp.com?owner=rsoesemann&repo=apex-domainbuilder">
   <img alt="Deploy to Salesforce"
        src="https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/src/main/webapp/resources/img/deploy.png">
@@ -62,7 +66,7 @@ public class Account_t extends DomainBuilder {
     private static void easyTestDataCreation() {
 
         // Setup
-        Contact_t jack = new Contact_t().first('Jack').last('Harris');
+        Contact_t jack = new Contact_t().first('Jack').last('Harris');h
 
         new Account_t()
                 .name('Acme Corp')
