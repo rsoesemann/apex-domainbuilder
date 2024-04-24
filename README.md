@@ -27,15 +27,21 @@ In the world of Enterprise software outside of Salesforce.com there are experts 
 @IsTest
 public class Account_t extends DomainBuilder {
 
+    // Construct the object
+
 	public Account_t() {
 		super(Account.SObjectType);
 
 		name('Acme Corp');
 	}
 
+    // Set Properties
+
 	public Account_t name(String value) {
 		return (Account_t) set(Account.Name, value);
 	}
+
+    // Relate it to other Domain Objects 
 
 	public Account_t add(Opportunity_t opp) {
 		return (Account_t) opp.setParent(Opportunity.AccountId, this);
