@@ -29,31 +29,34 @@ public class Account_t extends DomainBuilder {
 
     // Construct the object
 
-	public Account_t() {
-		super(Account.SObjectType);
+    public Account_t() {
+        super(Account.SObjectType);
 
-		name('Acme Corp');
-	}
+        name('Acme Corp');
+    }
 
     // Set Properties
 
-	public Account_t name(String value) {
-		return (Account_t) set(Account.Name, value);
-	}
+    public Account_t name(String value) {
+        return (Account_t) set(Account.Name, value);
+    }
 
     // Relate it to other Domain Objects 
 
-	public Account_t add(Opportunity_t opp) {
-		return (Account_t) opp.setParent(Opportunity.AccountId, this);
-	}
+    public Account_t add(Opportunity_t opp) {
+        return (Account_t) opp.setParent(Opportunity.AccountId, this);
+    }
 
-	public Account_t add(Contact_t con) {
-		return (Account_t) con.setParent(Contact.AccountId, this);
-	}
+    public Account_t add(Contact_t con) {
+        return (Account_t) con.setParent(Contact.AccountId, this);
+    }
 }
 ```
+
 2. By internally leveraging the [`fflib_SObjectUnitOfWork`](https://github.com/financialforcedev/fflib-apex-common/blob/master/fflib/src/classes/fflib_SObjectUnitOfWork.cls) for the DML all test run dramatically faster.
+
 3. The [Fluent Interface](https://martinfowler.com/bliki/FluentInterface.html) style of the Builder pattern combined with having all the database wiring encapsulated in the Unit of work made each test much more understandable.
+
 ```java
     @IsTest
     private static void easyTestDataCreation() {
@@ -77,5 +80,6 @@ public class Account_t extends DomainBuilder {
 	...
     }
 ```
+
 4. Using Graph algorithms to autodetect the correct insert order in the Unit Of Work.
 5. Is able to handle self-reference fields (e.g. Manager Contact Lookup on Contact) by using a patched fflib Unit of Work.
