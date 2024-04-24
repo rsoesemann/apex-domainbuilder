@@ -9,19 +9,19 @@ Test Data Builder framework to setup test data for complex Apex integration test
 
 Setting up test data for complex Apex integration tests is not easy, because you need to..:
 
- - set required fields even if irrelevant for the test 
+ - set required fields even if irrelevant for the test
  - insert the objects in the right order
  - create relationships by setting Lookup fields
  - put ugly `__c` all over the place
  - clutter your code with `Map<Id, SObject>` to keep track of related records
  - reduce the DML statements to not hit Governor Limits
  
-TestFactories as used by many developers and recommended by Salesforce.com can help to minimize ugly setup code by moving it to seperate classes. But over the time those classes tend to accumulate complexity and redundant spaghetti code.
+TestFactories as used by many developers and recommended by Salesforce.com can help to minimize ugly setup code by moving it to seperate classes. But over time those classes tend to accumulate complexity and redundant spaghetti code.
 
-In the world of Enterprise software outside of Salesforce.com there are experts that have created patterns for flexible and readable (fluent, concise) test data generation. Among them the most notable is Nat Pryce who wrote a great book about testing and somewhat invented the [Test Data Builder](http://www.natpryce.com/articles/000714.html) pattern. It's based on the more general [Builder Pattern](https://refactoring.guru/design-patterns/builder) which simplifies the construction of objects by moving variations from complex constructors to separate objects that only construct parts of the whole.
+In the world of Enterprise software outside of Salesforce.com there are experts that have created patterns for flexible and readable (fluent, concise) test data generation. Among them, the most notable is Nat Pryce who wrote a great book about testing and somewhat invented the [Test Data Builder](http://www.natpryce.com/articles/000714.html) pattern. It's based on the more general [Builder Pattern](https://refactoring.guru/design-patterns/builder) which simplifies the construction of objects by moving variations from complex constructors to separate objects that only construct parts of the whole.
 
 **apex-domainbuilder** brings those ideas to Apex testing:
-1. By incorporating a simple small Builder class for each test-relevant Domain SObject we centralize all the creation knowledge and eliminating redundancy.
+1. By incorporating a simple small Builder class for each test-relevant Domain SObject we centralize all the creation knowledge and eliminate redundancy.
 
 ```java
 @IsTest
@@ -53,9 +53,9 @@ public class Account_t extends DomainBuilder {
 }
 ```
 
-2. By internally leveraging the [`fflib_SObjectUnitOfWork`](https://github.com/financialforcedev/fflib-apex-common/blob/master/fflib/src/classes/fflib_SObjectUnitOfWork.cls) for the DML all test run dramatically faster.
+2. By internally leveraging the [`fflib_SObjectUnitOfWork`](https://github.com/financialforcedev/fflib-apex-common/blob/master/fflib/src/classes/fflib_SObjectUnitOfWork.cls) for the DML all tests run dramatically faster.
 
-3. The [Fluent Interface](https://martinfowler.com/bliki/FluentInterface.html) style of the Builder pattern combined with having all the database wiring encapsulated in the Unit of work made each test much more understandable.
+3. The **[Fluent Interface](https://martinfowler.com/bliki/FluentInterface.html)** style of the Builder pattern combined with having all the database wiring encapsulated in the Unit of work made each test much more understandable.
 
 ```java
     @IsTest
@@ -81,5 +81,5 @@ public class Account_t extends DomainBuilder {
     }
 ```
 
-4. Using Graph algorithms to autodetect the correct insert order in the Unit Of Work.
-5. Is able to handle self-reference fields (e.g. Manager Contact Lookup on Contact) by using a patched fflib Unit of Work.
+4. Using **Graph algorithms** to autodetect the correct insert order in the Unit Of Work.
+5. Is able to **handle self-reference fields** (e.g. Manager Contact Lookup on Contact) by using a patched **fflib Unit of Work**.
