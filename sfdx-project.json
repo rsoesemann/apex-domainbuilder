@@ -1,8 +1,16 @@
 {
     "packageDirectories": [
       {
-        "path": "force-app",
+        "path": "sfdx-source/fflib-apex-common-subset",
+        "default": false
+      },
+      {
+        "path": "sfdx-source/apex-domainbuilder",
         "default": true
+      },
+      {
+        "path": "sfdx-source/apex-domainbuilder-samplecode",
+        "default": false
       }
     ],
     "namespace": "",
