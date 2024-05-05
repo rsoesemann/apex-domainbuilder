@@ -48,3 +48,6 @@ package-lock.json
 mdapi/
 /.idea/
 .pmdCache
+
+# VS Code Extensions Related files
+.history/
