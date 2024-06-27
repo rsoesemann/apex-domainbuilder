@@ -22,7 +22,7 @@
 
     <!-- CUSTOM APEX RULES -->
 
-    <rule name="AvoidProductionDebugLogs" language="apex" message="Avoid leaving System.debug() statments in code as they negativly influence performance." class="net.sourceforge.pmd.lang.apex.rule.ApexXPathRule">
+    <rule name="AvoidProductionDebugLogs" language="apex" message="Avoid leaving System.debug() statments in code as they negativly influence performance." class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
         <priority>3</priority>
         <properties>
             <property name="xpath">
@@ -38,9 +38,8 @@
 
     <!-- CUSTOM SF METADATA RULES -->
 
-    <rule name="NoUnderscoresInFieldNames" language="xml" message="Custom fields should not contain underscores." class="net.sourceforge.pmd.lang.rule.XPathRule">
+    <rule name="NoUnderscoresInFieldNames" language="xml" message="Custom fields should not contain underscores." class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
         <properties>
-            <property name="version" value="2.0"></property>
             <property name="xpath">
                 <value><![CDATA[
                     //CustomField/fullName/text[matches(@Image, ".*_.*__c")]
@@ -49,9 +48,8 @@
         </properties>
     </rule>
 
-    <rule name="CustomFieldNamingConvention" language="xml" message="Incorrectly named field" class="net.sourceforge.pmd.lang.rule.XPathRule">
+    <rule name="CustomFieldNamingConvention" language="xml" message="Incorrectly named field" class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
         <properties>
-            <property name="version" value="2.0"/>
             <property name="xpath">
                 <value><![CDATA[
 //CustomField[
@@ -78,10 +76,9 @@
         </properties>
     </rule>
 
-    <rule name="UnrestrictedPasswordPolicy" language="xml" message="It is a high security risk for any profile to have &quot;No Restriction&quot; as the password complexity requirement." class="net.sourceforge.pmd.lang.rule.XPathRule">
+    <rule name="UnrestrictedPasswordPolicy" language="xml" message="It is a high security risk for any profile to have &quot;No Restriction&quot; as the password complexity requirement." class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
         <priority>3</priority>
         <properties>
-            <property name="version" value="2.0"></property>
             <property name="xpath">
                 <value><![CDATA[
                 //SecuritySettings/passwordPolicies/complexity[ text[@Image='No restriction'] ]
@@ -90,10 +87,9 @@
         </properties>
     </rule>
 
-    <rule name="TooShortPasswordPolicy" language="xml" message="The default value for the password length is 8 characters. Less than 8 characters is not secure." class="net.sourceforge.pmd.lang.rule.XPathRule">
+    <rule name="TooShortPasswordPolicy" language="xml" message="The default value for the password length is 8 characters. Less than 8 characters is not secure." class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
         <priority>3</priority>
         <properties>
-            <property name="version" value="2.0"></property>
             <property name="xpath">
                 <value><![CDATA[
                 //SecuritySettings/passwordPolicies/minimumPasswordLength[ text[@Image<'8'] ]
@@ -102,10 +98,9 @@
         </properties>
     </rule>
 
-    <rule name="ModifyAllOnSysAdminProfile" language="xml" message="Only Admins can view and modify all data, if any other profile get these permissions, they could manipulate records that shouldn't" class="net.sourceforge.pmd.lang.rule.XPathRule">
+    <rule name="ModifyAllOnSysAdminProfile" language="xml" message="Only Admins can view and modify all data, if any other profile get these permissions, they could manipulate records that shouldn't" class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
         <priority>3</priority>
         <properties>
-            <property name="version" value="2.0"></property>
             <property name="xpath">
                 <value><![CDATA[
                 //Profile/userPermissions[ name/text[@Image='ModifyAllData' or @Image='ViewAllData'] and enabled/text[@Image='true'] and pmd:fileName() != 'System Administrator' ]
@@ -114,10 +109,9 @@
         </properties>
     </rule>
 
-    <rule name="ModifyAllOnPermSet" language="xml" message="Allowing this user permission can give access and ability to modify sensitive data." class="net.sourceforge.pmd.lang.rule.XPathRule">
+    <rule name="ModifyAllOnPermSet" language="xml" message="Allowing this user permission can give access and ability to modify sensitive data." class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
         <priority>3</priority>
         <properties>
-            <property name="version" value="2.0"></property>
             <property name="xpath">
                 <value><![CDATA[
                 //PermissionSet/userPermissions[ name/text[@Image='ModifyAllData'] and enabled/text[@Image='true'] ]
@@ -126,10 +120,9 @@
         </properties>
     </rule>
 
-    <rule name="ViewAllOnPermSet" language="xml" message="Allowing this user permission can give access to sensitive data." class="net.sourceforge.pmd.lang.rule.XPathRule">
+    <rule name="ViewAllOnPermSet" language="xml" message="Allowing this user permission can give access to sensitive data." class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
         <priority>3</priority>
         <properties>
-            <property name="version" value="2.0"></property>
             <property name="xpath">
                 <value><![CDATA[
                 //PermissionSet/userPermissions[ name/text[@Image='ViewAllData'] and enabled/text[@Image='true'] ]
@@ -138,10 +131,9 @@
         </properties>
     </rule>
 
-    <rule name="ManageUsersByNonSysAdmins" language="xml" message="Managing users need to be limited to System Administrator Profile only." class="net.sourceforge.pmd.lang.rule.XPathRule">
+    <rule name="ManageUsersByNonSysAdmins" language="xml" message="Managing users need to be limited to System Administrator Profile only." class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
         <priority>3</priority>
         <properties>
-            <property name="version" value="2.0"></property>
             <property name="xpath">
                 <value><![CDATA[
                 //Profile/userPermissions[ pmd:fileName() != 'System Administrator' and name/text[@Image='ManageUsers'] ]
@@ -150,10 +142,9 @@
         </properties>
     </rule>
 
-    <rule name="TooLongSessionTimeout" language="xml" message="Allowing access to an inactive session for more than 12 hours is a security risk." class="net.sourceforge.pmd.lang.rule.XPathRule">
+    <rule name="TooLongSessionTimeout" language="xml" message="Allowing access to an inactive session for more than 12 hours is a security risk." class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
         <priority>3</priority>
         <properties>
-            <property name="version" value="2.0"></property>
             <property name="xpath">
                 <value><![CDATA[
                 //SecuritySettings/sessionTimeout[ text[@Image='24 hours of inactivity'] or text[@Image='12 hours of inactivity'] ]
@@ -162,10 +153,9 @@
         </properties>
     </rule>
 
-    <rule name="PasswordsNeverExpire" language="xml" message="Passwords need to expire every 90 days for security." class="net.sourceforge.pmd.lang.rule.XPathRule">
+    <rule name="PasswordsNeverExpire" language="xml" message="Passwords need to expire every 90 days for security." class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
         <priority>3</priority>
         <properties>
-            <property name="version" value="2.0"></property>
             <property name="xpath">
                 <value><![CDATA[
                 //SecuritySettings/passwordPolicies/expiration[ text[@Image='Never'] or text[@Image='SixMonths'] or text[@Image='OneYear'] ]
@@ -174,10 +164,9 @@
         </properties>
     </rule>
 
-    <rule name="ViewSetupByNonSysAdmins" language="xml" message="Exposing the setup menu to non-authorized users." class="net.sourceforge.pmd.lang.rule.XPathRule">
+    <rule name="ViewSetupByNonSysAdmins" language="xml" message="Exposing the setup menu to non-authorized users." class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
         <priority>3</priority>
         <properties>
-            <property name="version" value="2.0"></property>
             <property name="xpath">
                 <value><![CDATA[
                 //Profile/userPermissions[ pmd:fileName() != 'System Administrator' and enabled/text[@Image='true'] and name/text[@Image='ViewSetup'] ]

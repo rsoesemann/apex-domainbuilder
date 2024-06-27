@@ -155,7 +155,7 @@ public class DomainBuilder_Test {
 
     @IsTest
     private static void persistReturnsSObject() {
-        Account record = (Account) new Account_t().persist();
+        new Account_t().persist();
 
         System.assertEquals(1, [SELECT Count() FROM Account]);
     }
