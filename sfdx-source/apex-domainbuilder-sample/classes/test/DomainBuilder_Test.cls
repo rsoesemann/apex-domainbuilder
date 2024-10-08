@@ -4,7 +4,7 @@ public class DomainBuilder_Test {
     @IsTest
     private static void happyPath() {
 
-        Contact_t joe = new Contact_t().first('Ron').last('Harris');
+        Contact_t joe = new Contact_t().first('Joe').last('Harris');
 
         new Account_t()
                 .name('Acme Corp')
@@ -15,7 +15,7 @@ public class DomainBuilder_Test {
                             .contact(joe))
                 .persist();
 
-        System.assertEquals(2, [SELECT Count() FROM Account]); 
+        System.assertEquals(2, [SELECT Count() FROM Account]);
         System.assertEquals(1, [SELECT Count() FROM Opportunity]);
         System.assertEquals(2, [SELECT Count() FROM Contact]);
         System.assertEquals(1, [SELECT Count() FROM OpportunityContactRole]);
@@ -197,9 +197,9 @@ public class DomainBuilder_Test {
                 .add(opp                            // 0x insert
                      .add(con))                     // 1x insert OpportunityContactRole
                 .persist();                         // 1x setSavepoint
-        
-        // Verify                
-        System.assertEquals(6, Limits.getDmlRows()); 
+
+        // Verify
+        System.assertEquals(6, Limits.getDmlRows());
         System.assertEquals(1, [SELECT Count() FROM Account]);
         System.assertEquals(2, [SELECT Count() FROM Contact]);
         System.assertEquals(1, [SELECT Count() FROM Opportunity]);
