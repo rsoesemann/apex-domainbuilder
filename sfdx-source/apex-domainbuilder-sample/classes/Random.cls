@@ -1,3 +1,4 @@
+@IsTest
 public class Random {
 
 	public String string() {
