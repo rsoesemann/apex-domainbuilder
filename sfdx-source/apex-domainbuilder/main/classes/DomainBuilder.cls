@@ -22,11 +22,11 @@ public abstract class DomainBuilder {
 
     // PUBLIC
 
-    public SObject persist() {
-        return persist(new fflib_SObjectUnitOfWork.SimpleDML());
+    public static void save() {
+        save(new fflib_SObjectUnitOfWork.SimpleDML());
     }
 
-    public SObject persist(fflib_SObjectUnitOfWork.IDML dml) {
+    public static void save(fflib_SObjectUnitOfWork.IDML dml) {
         fflib_SObjectUnitOfWork uow = unitOfWork(dml);
 
         for(DomainBuilder obj: objects) {
@@ -43,10 +43,17 @@ public abstract class DomainBuilder {
         uow.commitWork();
 
         objects.clear();
+    }
+
+    public SObject persist() {
+        return persist(new fflib_SObjectUnitOfWork.SimpleDML());
+    }
+
+    public SObject persist(fflib_SObjectUnitOfWork.IDML dml) {
+        save(dml);
 
         return record;
     }
-
 
     // Note: virtual so it can be extended by implementations in order to cast the return type to its specifyc type
     public virtual DomainBuilder recordType(String developerName) {
