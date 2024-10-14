@@ -208,17 +208,18 @@ public class DomainBuilder_Test {
     private static void noUnneededRecords() {
 
         // Setup & Exercise
-        Contact_t con = new Contact_t();            // 1x insert
-        Opportunity_t opp = new Opportunity_t();    // 1x insert
+        Contact_t con = new Contact_t();            // 1x insert statement, 1x row
+        Opportunity_t opp = new Opportunity_t();    // 1x insert statement, 1x row
 
-        new Account_t()                             // 1x insert
-                .add(new Contact_t())               // 0x insert together with "con"
-                .add(con)                           // 0x insert
-                .add(opp                            // 0x insert
-                     .add(con))                     // 1x insert OpportunityContactRole
-                .persist();                         // 1x setSavepoint
+        new Account_t()                             // 1x insert statement, 1x row
+                .add(new Contact_t())               // 0x insert statement (both contacts are inserted together at the same time in the same DML), 1x row
+                .add(con)                           // 0x insert statement, 0x row
+                .add(opp                            // 0x insert statement, 0x row
+                     .add(con))                     // 1x insert OpportunityContactRole, 1x row
+                .persist();                         // 1x setSavepoint statement, 0x row
 
         // Verify
+        System.assertEquals(5, Limits.getDmlStatements());
         System.assertEquals(5, Limits.getDmlRows());
         System.assertEquals(1, [SELECT Count() FROM Account]);
         System.assertEquals(2, [SELECT Count() FROM Contact]);
