@@ -3,10 +3,7 @@ public abstract class DomainBuilder {
     private static DirectedGraph graph = new DirectedGraph();
     private static Set<DomainBuilder> objects = new Set<DomainBuilder>();
 
-    private Boolean isSetupObject;
     private Map<SObjectField, DomainBuilder> parentByRelationship = new Map<SObjectField, DomainBuilder>();
-    private Map<SObjectField, Map<SObjectField, List<DomainBuilder>>> relationshipsToSync
-                        = new Map<SObjectField, Map<SObjectField, List<DomainBuilder>>>();
     public SObject record;
     public SObjectType type;
     public Id id { private set; get {return record.Id;} }
@@ -14,25 +11,23 @@ public abstract class DomainBuilder {
 
     // CONSTRUCTORS
 
-    public DomainBuilder(SObjectType type, Boolean isSetupObject) {
+    public DomainBuilder(SObjectType type) {
         this.type = type;
         this.record = type.newSObject(null, true);
-        this.isSetupObject = isSetupObject;
 
         graph.node(type);
         objects.add(this);
     }
 
 
-    public DomainBuilder(SObjectType type) {
-        this(type, false);
-    }
-
-
     // PUBLIC
 
-    public SObject persist() {
-        fflib_SObjectUnitOfWork uow = unitOfWork();
+    public static void save() {
+        save(new fflib_SObjectUnitOfWork.SimpleDML());
+    }
+
+    public static void save(fflib_SObjectUnitOfWork.IDML dml) {
+        fflib_SObjectUnitOfWork uow = unitOfWork(dml);
 
         for(DomainBuilder obj: objects) {
             if(obj.record.Id == null) {
@@ -48,12 +43,20 @@ public abstract class DomainBuilder {
         uow.commitWork();
 
         objects.clear();
+    }
+
+    public SObject persist() {
+        return persist(new fflib_SObjectUnitOfWork.SimpleDML());
+    }
+
+    public SObject persist(fflib_SObjectUnitOfWork.IDML dml) {
+        save(dml);
 
         return record;
     }
 
-
-    public DomainBuilder recordType(String developerName) {
+    // Note: virtual so it can be extended by implementations in order to cast the return type to its specifyc type
+    public virtual DomainBuilder recordType(String developerName) {
         Id rtId = type.getDescribe().getRecordTypeInfosByDeveloperName().get(developerName).getRecordTypeId();
         return set('RecordTypeId', rtId);
     }
@@ -78,28 +81,10 @@ public abstract class DomainBuilder {
             parent.registerIncludingParents();
         }
 
-        if(relationshipsToSync.containsKey(relationship)) {
-            synchronize(relationship);
-        }
-
         graph.edge(this.type, parent.type);
 
         // Note: Return parent instead of this as we call this always from the parent
         return parent;
-    }
-
-
-    protected void syncOnChange(SObjectField sourceField, DomainBuilder targetObject, SObjectField targetField) {
-        if( !relationshipsToSync.containsKey(sourceField)) {
-            relationshipsToSync.put(sourceField, new Map<SObjectField, List<DomainBuilder>>());
-        }
-        if( !relationshipsToSync.get(sourceField).containsKey(targetField)) {
-            relationshipsToSync.get(sourceField).put(targetField, new List<DomainBuilder>());
-        }
-
-        relationshipsToSync.get(sourceField).get(targetField).add(targetObject);
-
-        synchronize(sourceField);
     }
 
 
@@ -137,25 +122,14 @@ public abstract class DomainBuilder {
     }
 
 
-    private void synchronize(SObjectField sourceField) {
-        for(SObjectField targetField: relationshipsToSync.get(sourceField).keySet()) {
-            for(DomainBuilder obj : relationshipsToSync.get(sourceField).get(targetField)) {
-
-                DomainBuilder parent = parentByRelationship.get(sourceField);
-                obj.setParent(targetField, parent);
-            }
-        }
-    }
-
-
-    private static fflib_SObjectUnitOfWork unitOfWork() {
+    private static fflib_SObjectUnitOfWork unitOfWork(fflib_SObjectUnitOfWork.IDML dml) {
         List<SObjectType> insertOrder = new List<SObjectType>();
         List<SObjectType> sorted = graph.sortTopologically();
 
         for(Integer i = sorted.size() - 1; i >= 0; i--){
             insertOrder.add(sorted[i]);
         }
-        return new fflib_SObjectUnitOfWork(insertOrder);
+        return new fflib_SObjectUnitOfWork(insertOrder, dml);
     }
 
 
