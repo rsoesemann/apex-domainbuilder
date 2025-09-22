@@ -4,7 +4,7 @@ Test Data Builder framework to setup test data for complex Apex integration test
 
 **TL;DR; Watch my a Youtube Code Live with Salesforce about the apex-domainbuilder**
 
-[![](http://img.youtube.com/vi/e03lvRfOHNs/hqdefault.jpg)](https://youtu.be/e03lvRfOHNs "")
+[![](http://img.youtube.com/vi/Kc0q8pfD3Ic/hqdefault.jpg)](https://youtu.be/Kc0q8pfD3Ic?t=279 "")
 
 <a href="https://githubsfdeploy.herokuapp.com?owner=rsoesemann&repo=apex-domainbuilder">
   <img alt="Deploy to Salesforce"
