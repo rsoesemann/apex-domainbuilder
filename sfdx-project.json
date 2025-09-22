@@ -9,7 +9,7 @@
         "default": true
       },
       {
-        "path": "sfdx-source/apex-domainbuilder-samplecode",
+        "path": "sfdx-source/apex-domainbuilder-sample",
         "default": false
       }
     ],
