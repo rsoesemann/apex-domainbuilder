@@ -105,9 +105,6 @@ public virtual class fflib_SObjectUnitOfWork
         }
         public virtual void dmlDelete(List<SObject> objList)
         {
-            if(!objList.isEmpty() && !objList[0].getSObjectType().getDescribe().isDeletable()) {
-                throw new System.NoAccessException();
-            }
             Database.delete(objList, AccessLevel.USER_MODE);
         }
         public virtual void eventPublish(List<SObject> objList)
