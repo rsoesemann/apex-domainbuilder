@@ -93,19 +93,22 @@ public virtual class fflib_SObjectUnitOfWork
 	    void emptyRecycleBin(List<SObject> objList);
     }
 
-    public virtual class SimpleDML implements IDML
+    public with sharing virtual class SimpleDML implements IDML
     {
         public virtual void dmlInsert(List<SObject> objList)
         {
-            insert objList;
+            Database.insert(objList, AccessLevel.USER_MODE);
         }
         public virtual void dmlUpdate(List<SObject> objList)
         {
-            update objList;
+            Database.update(objList, AccessLevel.USER_MODE);
         }
         public virtual void dmlDelete(List<SObject> objList)
         {
-            delete objList;
+            if(!objList.isEmpty() && !objList[0].getSObjectType().getDescribe().isDeletable()) {
+                throw new System.NoAccessException();
+            }
+            Database.delete(objList, AccessLevel.USER_MODE);
         }
         public virtual void eventPublish(List<SObject> objList)
         {
